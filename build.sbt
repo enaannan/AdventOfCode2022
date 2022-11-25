@@ -6,3 +6,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "AdventOfCode2022"
   )
+
+libraryDependencies ++= Seq(
+  "com.softwaremill.sttp.client3" %% "core" % "3.8.3"
+)

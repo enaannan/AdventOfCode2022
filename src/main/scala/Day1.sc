@@ -1,5 +1,5 @@
-val input:List[String] = Utils.readFromFile("Input/Day1/Example_Day1.txt").toList
-
+//val input:List[String] = Utils.readFromFile("Input/Day1/Example_Day1.txt").toList
+val input= Utils.readFromFile("Input/Day1/Input_day1.txt")
 def findSum(in:List[String]) ={
  in.foldLeft(List[Int](0))((a,b)=> b match {
    case currentNum if currentNum.isEmpty => a.+:(0)

@@ -1,46 +1,143 @@
 
 import sttp.client3._
 
+import scala.collection.mutable.ListBuffer
 import scala.io.Source
+import scala.util.control.Breaks.{break, breakable}
 object Main {
   def main(args: Array[String]): Unit = {
+    import scala.util.control.Breaks.{break, breakable}
 
-    val bufferedSource = Source.fromResource("Input/Day4/Input_day4.txt")
-    val input = bufferedSource.getLines()
+    //val input = Utils.readFromFile("Input/Day8/Input_day5.txt")
+    val input = Utils.readFromFile("Input/Day8/Example_Day8.txt")
 
-    val parsedInput: Seq[Array[(Int, Int)]] = {
-      for(line <- input) yield {
-        val Array(x,y,a,b) = line.split("[,-]").map(_.toInt)
+    val parsedInput:Array[Array[Int]] = input.map{line => line.map{ch=>ch.asDigit}.toArray }
 
-        Array((x,y),(a,b))
+    val transposedInput: Array[Array[Int]] = parsedInput.transpose
+
+    // total trees
+    var totalTrees = parsedInput.length * parsedInput.head.length
+
+    //visible from left
+    def visibleFromLeft(in: Array[Int], currentPos:(Int,Int)):Boolean = {
+      val max = in.max
+      (max == parsedInput(currentPos._1)(currentPos._2)) && (in.count(_ == max) == 1)
+    }
+
+    //visible from the top
+    def visibleFromTop(in: Array[Int], currentPos:(Int,Int)):Boolean = {
+      val max = in.max
+      (max == transposedInput(currentPos._1)(currentPos._2)) && (in.count(_ == max) == 1)
+    }
+
+    //visible from the right
+    def visibleFromRight(in: Array[Int], currentPos:(Int,Int)):Boolean = {
+      val max = in.max
+      max == parsedInput(currentPos._1)(currentPos._2) && (in.count(_ == max) == 1)
+    }
+
+    //visible from the bottom
+    def visibleFromDown(in: Array[Int], currentPos:(Int,Int)):Boolean = {
+      val max = in.max
+      max == transposedInput(currentPos._1)(currentPos._2) && (in.count(_ == max) == 1)
+    }
+
+
+    for(i<- 1 until parsedInput.length){
+      for(j<-1 until parsedInput.head.length-1){
+
+        breakable{
+          if(visibleFromLeft(parsedInput(i).take(j+1),(i,j))){
+            break
+            // visibleFromTop
+          }else if (visibleFromTop(transposedInput(j).take(i+1),(j,i))){
+            break
+          }else if(visibleFromRight(parsedInput(i).drop(j),(i,j))){
+            break
+            //visibleFromDown
+          }else if (visibleFromDown(transposedInput(j).drop(i),(j,i))){
+
+          }else{
+            //not visible
+            totalTrees-=1
+          }
+        }
+
       }
-    }.toList
-
-    bufferedSource.close()
-
-    def subsume(elfA: (Int,Int),elfB: (Int,Int)):Boolean = {
-      (elfA._1 <= elfB._1) && (elfA._2 >= elfB._2)
-      //  ||
-      //    (elfA._1 >= elfB._1) && (elfA._2 >= elfB._2)
     }
 
-    parsedInput.count{elfPair:Array[(Int,Int)] =>
-      subsume(elfPair.head,elfPair.last) || subsume(elfPair.last,elfPair.head )
+    totalTrees
+    print(totalTrees)
+
+    //**********Part two******************
+
+
+    //visible from left
+    def distanceFromLeft (in:Array[Int]):Int = {
+      val arr = in.reverse.drop(1)
+      val head = in.reverse.head
+//      arr.count(height => height <= head  )
+      val blockTressPos = arr.indexWhere(height => height >= in.head)
+      if(blockTressPos == 0) {
+
+        //first tree is the same height
+        if(arr(0) == in.head) {
+          1}
+        else {
+          //          none of the trees are taller
+          arr.length
+        }
+      }
+      else blockTressPos + 1
     }
 
+    //def distanceFromTop:Int () = {}
 
-//   val p = Utils.readFromFile("Input/nii")
-//    println(p)
-//    input.map(a=> a.map(_.split("-")))
+    def distanceFromRight(in:Array[Int]):Int = {
+      val arr = in.drop(1)
+
+       + 1
+      val blockTressPos = arr.indexWhere(height => height >= in.head)
+      if(blockTressPos == 0) {
+
+        //first tree is the same height
+        if(arr(0) == in.head) {
+          1}
+        else {
+//          none of the trees are taller
+          arr.length
+        }
+        }
+      else blockTressPos + 1
+    }
+
+    def distanceFromDown:Int = ???
+
+    def totalDistance:Int = ???
+
+
+val score:ListBuffer[Int] = ListBuffer.empty
+    for(i<- 1 until parsedInput.length){
+      for(j<-1 until parsedInput.head.length-1){
+
+      val l = distanceFromLeft(parsedInput(i).take(j+1))
+       val t =   distanceFromLeft(transposedInput(j).take(i+1))
+        val r =  distanceFromRight(parsedInput(i).drop(j))
+         val b=  distanceFromRight(transposedInput(j).drop(i))
+        val tot = l*t*r*b
+
+          score.addOne(tot)
+      }
+    }
+    println(score)
+
+
+
+
+    //    val p = Array(Array(3,0,3,7,3), Array(2,5,5,1,2),Array(6,5,3,3,2), Array(3,3,5,4,9),Array(3,5,3,9,0))
 //
-//    val input = "2-4,6-8\n2-3,4-5\n5-7,7-9\n2-8,3-7\n6-6,4-6\n2-6,4-8"
-//      .split("[,-]")
-//
-//    println(input.toList)
-//
-//print("df")
-//    input.flatten
-//    println(input.head.last)
+//   val o= p.transpose
+//    print("")
 
 
 ////    import sttp.client3._

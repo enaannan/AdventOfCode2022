@@ -8,4 +8,11 @@ object Utils {
     bufferedSource.close()
     input
   }
+
+  def readFromFileStringIterator(fileName: String):Iterator[String] = {
+    val bufferedSource = Source.fromResource(fileName)
+    val input = bufferedSource.getLines()
+    bufferedSource.close()
+    input
+  }
 }
